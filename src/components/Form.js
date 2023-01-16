@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 
 function Form() {
-  const [firstName, setFirstName] = useState("John");
-  const [lastName, setLastName] = useState("Henry");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
+  const [errors, setErrors] = useState([]); // add state for holding error messages
 
   function handleFirstNameChange(event) {
     setFirstName(event.target.value);
@@ -15,17 +16,24 @@ function Form() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    const formData = { firstName: firstName, lastName: lastName };
+    if (firstName.length > 0 && lastName.length > 0){
+    const formData = {
+       firstName,
+       lastName,
+      };
     const dataArray = [...submittedData, formData];
     setSubmittedData(dataArray);
     setFirstName("");
     setLastName("");
+    }
+    else setErrors(["Both names are required!"]);
+    
   }
 
   const listOfSubmissions = submittedData.map((data, index) => {
     return (
       <div key={index}>
-        {data.firstName} {data.lastName}
+        <p>{data.firstName} {data.lastName}</p>
       </div>
     );
   });
@@ -37,8 +45,15 @@ function Form() {
         <input type="text" onChange={handleLastNameChange} value={lastName} />
         <button type="submit">Submit</button>
       </form>
-      <h3>Submissions</h3>
-      {listOfSubmissions}
+      {errors.length > 0
+      ? errors.map((error, index) => (
+          <p key={index} style={{ color: "red" }}>
+            {error}
+          </p>
+        ))
+      : null}
+    <h3>Submissions</h3>
+    {listOfSubmissions}
     </div>
   );
 }
